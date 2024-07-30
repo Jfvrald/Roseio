@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Player</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+       
+    </style>
+</head>
+<body>
+    <div class="audio-card">
+        <div class="player">
+            <div class="top">
+                <button class="small" onclick="prevTrack()"></button>
+                <p class="indicator">PLAYING NOW</p>
+                <button class="small" onclick="nextTrack()"></button>
+            </div>
+
+            <div class="center">
+                <img class="album" src="https://upload.wikimedia.org/wikipedia/en/f/f3/EVOL_by_Future_cover.jpg" alt="Album Cover">
+            </div>
+
+            <div class="song_details">
+                <div id="songTitle" style="font-size: 20px;">Title</div>
+                <div id="songArtist" style="margin-top: 7px;font-size: 10px;">Artist</div>
+            </div>
+
+            <div class="slider">
+                <div class="time">
+                    <div id="currentTime">0:00</div>
+                    <div id="totalTime">0:00</div>
+                </div>
+                <div class="slider_bar" onclick="setTime(event)">
+                    <div class="inner_slider_bar"></div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="big" onclick="prevTrack()">Prev</button>
+                <button class="big_play_pause" onclick="togglePlayPause()">
+                    <div id="playPauseButton">Play</div>
+                </button>
+                <button class="big" onclick="nextTrack()">Next</button>
+            </div>
+
+            <audio id="audio"></audio>
+        </div>
+    </div>
+
+    <script>
+        const tracks = [
+            { title: "Track 1", artist: "Artist 1", src: "sining.mp3" },
+            { title: "Track 2", artist: "Artist 2", src: "diwata.mp3" },
+            { title: "Track 3", artist: "Artist 3", src: "hulingsandali.mp3" }
+        ];
+
+        let currentTrackIndex = 0;
+        const audio = document.getElementById('audio');
+        const playPauseButton = document.getElementById('playPauseButton');
+        const songTitle = document.getElementById('songTitle');
+        const songArtist = document.getElementById('songArtist');
+        const currentTimeElem = document.getElementById('currentTime');
+        const totalTimeElem = document.getElementById('totalTime');
+        const innerSliderBar = document.querySelector('.inner_slider_bar');
+
+        function loadTrack(index) {
+            const track = tracks[index];
+            audio.src = track.src;
+            songTitle.textContent = track.title;
+            songArtist.textContent = track.artist;
+            playPauseButton.textContent = 'Play';
+            audio.pause();
+            audio.currentTime = 0;
+            updateSlider();
+        }
+
+        function togglePlayPause() {
+            if (audio.paused) {
+                audio.play();
+                playPauseButton.textContent = 'Pause';
+            } else {
+                audio.pause();
+                playPauseButton.textContent = 'Play';
+            }
+        }
+
+        function nextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+            loadTrack(currentTrackIndex);
+            togglePlayPause(); // Automatically play the next track
+        }
+
+        function prevTrack() {
+            currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
+            loadTrack(currentTrackIndex);
+            togglePlayPause(); // Automatically play the previous track
+        }
+
+        function updateSlider() {
+            const duration = audio.duration;
+            const currentTime = audio.currentTime;
+
+            if (duration) {
+                const percentage = (currentTime / duration) * 100;
+                innerSliderBar.style.width = percentage + '%';
+
+                const minutes = Math.floor(currentTime / 60);
+                const seconds = Math.floor(currentTime % 60);
+                currentTimeElem.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+                const totalMinutes = Math.floor(duration / 60);
+                const totalSeconds = Math.floor(duration % 60);
+                totalTimeElem.textContent = `${totalMinutes}:${totalSeconds < 10 ? '0' : ''}${totalSeconds}`;
+            }
+        }
+
+        function setTime(event) {
+            const sliderBar = event.currentTarget;
+            const rect = sliderBar.getBoundingClientRect();
+            const offsetX = event.clientX - rect.left;
+            const percentage = (offsetX / sliderBar.clientWidth);
+            audio.currentTime = percentage * audio.duration;
+        }
+
+        // Initialize with the first track
+        loadTrack(currentTrackIndex);
+
+        // Update time display and slider as the track plays
+        audio.addEventListener('timeupdate', updateSlider);
+    </script>
+</body>
+</html>
