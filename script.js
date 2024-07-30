@@ -3,9 +3,7 @@ const tracks = [
     { title: "Diwata", artist: "Abra ft. Chito Miranda", src: "track2.mp3", cover: "rose2.png", bg: "bg2.png", color: "#9102ca" },
     { title: "Larawan", artist: "JRoa ft. Flow G", src: "track3.mp3", cover: "rose3.png", bg: "bg3.png", color: "#2B26C1" },
     { title: "Scorpions", artist: "Always Somewhere", src: "track4.mp3", cover: "rose4.png", bg: "bg4.png", color: "#E36B25" },
-    { title: "I'll Always Love You ", artist: "Michael Johnson", src: "track5.mp3", cover: "rose5.png", bg: "bg5.png", color: "#2C4B88" },
-
-    
+    { title: "I'll Always Love You", artist: "Michael Johnson", src: "track5.mp3", cover: "rose5.png", bg: "bg5.png", color: "#2C4B88" },
 ];
 
 let currentTrackIndex = 0;
@@ -115,14 +113,17 @@ audio.addEventListener('ended', () => {
 
 // Ensure the play/pause button is properly handled
 playPauseButton.addEventListener('click', () => {
-    if (audio.paused && audio.currentTime === 0) {
-        // If the track is at the start, play it
-        audio.play();
+    if (audio.paused) {
+        if (audio.currentTime === 0) {
+            audio.play(); // Start from the beginning if it's a new track
+        } else {
+            togglePlayPause(); // Continue toggling play/pause
+        }
         playPauseButton.textContent = 'Pause';
         albumCover.classList.add('rotating');
         isPlaying = true;
     } else {
-        togglePlayPause();
+        togglePlayPause(); // Continue toggling play/pause
     }
 });
 
